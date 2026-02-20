@@ -22,9 +22,18 @@ const tipoInventario = document.querySelector('#inventario select[name="tipo"]')
 const sedeInventario = document.querySelector('#inventario select[name="sede"]');
 const productLinesContainer = document.getElementById('product-lines-container');
 const addProductLineBtn = document.querySelector('.add-product-line');
+const confirmModal = document.getElementById('confirm-modal');
+const confirmSummaryGrid = document.getElementById('confirm-summary-grid');
+const confirmProductsBody = document.getElementById('confirm-products-body');
+const confirmAgreement = document.getElementById('confirm-agreement');
+const confirmAgreementText = document.getElementById('confirm-agreement-text');
+const confirmSendBtn = document.getElementById('confirm-send');
+const confirmBackBtn = document.getElementById('confirm-back');
+const closeConfirmButtons = document.querySelectorAll('[data-close-confirm]');
 const state = {
     products: [],
     productFilter: '',
+    pendingInventorySubmission: null,
 };
 
 const DEMO_PRODUCTS = [
@@ -51,6 +60,24 @@ addProductLineBtn?.addEventListener('click', () => addProductLine());
 if (productLinesContainer && !productLinesContainer.children.length) {
     addProductLine();
 }
+
+confirmAgreement?.addEventListener('change', () => {
+    if (confirmSendBtn) {
+        confirmSendBtn.disabled = !confirmAgreement.checked;
+    }
+});
+
+confirmBackBtn?.addEventListener('click', closeConfirmModal);
+closeConfirmButtons.forEach((button) => {
+    button.addEventListener('click', closeConfirmModal);
+});
+
+confirmSendBtn?.addEventListener('click', async () => {
+    if (!state.pendingInventorySubmission || !confirmAgreement?.checked) {
+        return;
+    }
+    await submitInventoryWithConfirmation();
+});
 
 function setStatus(action, message = '', type = 'info') {
     const el = document.querySelector(`.form-status[data-status="${action}"]`);
@@ -85,10 +112,28 @@ async function handleSubmit(event) {
         if (productosInput) {
             productosInput.value = JSON.stringify(productos);
         }
+
+        const formData = collectFormDataIncludingDisabled(form);
+        const payload = Object.fromEntries(formData.entries());
+        openConfirmModal(form, payload, productos);
+        return;
     }
 
     const formData = collectFormDataIncludingDisabled(form);
     const payload = Object.fromEntries(formData.entries());
+
+    await submitFormPayload(form, action, payload);
+}
+
+async function submitInventoryWithConfirmation() {
+    const pending = state.pendingInventorySubmission;
+    if (!pending) return;
+
+    closeConfirmModal();
+    await submitFormPayload(pending.form, pending.action, pending.payload);
+}
+
+async function submitFormPayload(form, action, payload) {
 
     setStatus(action, 'Enviando datos...', 'info');
     toggleFormDisabled(form, true);
@@ -111,6 +156,70 @@ async function handleSubmit(event) {
             syncSedeWithTipo();
         }
     }
+}
+
+function openConfirmModal(form, payload, productos) {
+    if (!confirmModal || !confirmSummaryGrid || !confirmProductsBody || !confirmAgreementText) {
+        return;
+    }
+
+    state.pendingInventorySubmission = {
+        form,
+        action: 'inventario',
+        payload,
+    };
+
+    const summaryItems = [
+        { label: 'Fecha', value: payload.fecha || '-' },
+        { label: 'Hora', value: payload.hora || '-' },
+        { label: 'Sede', value: payload.sede || '-' },
+        { label: 'Responsable entrega', value: payload.responsable || '-' },
+        { label: 'Modo', value: payload.tipo || '-' },
+    ];
+
+    confirmSummaryGrid.innerHTML = summaryItems
+        .map(
+            (item) => `
+                <article class="confirm-summary-item">
+                    <span>${item.label}</span>
+                    <strong>${item.value}</strong>
+                </article>
+            `,
+        )
+        .join('');
+
+    confirmProductsBody.innerHTML = productos
+        .map(
+            (item) => `
+                <tr>
+                    <td>${item.codigo || '-'}</td>
+                    <td>${item.descripcion || '-'}</td>
+                    <td>${item.unidad || '-'}</td>
+                    <td>${item.cantidad ?? '-'}</td>
+                </tr>
+            `,
+        )
+        .join('');
+
+    const responsable = (payload.responsable || 'responsable').toUpperCase();
+    confirmAgreementText.textContent = `Yo, ${responsable}, estoy de acuerdo con estos productos y cantidades.`;
+
+    if (confirmAgreement) {
+        confirmAgreement.checked = false;
+    }
+    if (confirmSendBtn) {
+        confirmSendBtn.disabled = true;
+    }
+
+    confirmModal.hidden = false;
+    document.body.classList.add('modal-open');
+}
+
+function closeConfirmModal() {
+    if (!confirmModal) return;
+    confirmModal.hidden = true;
+    document.body.classList.remove('modal-open');
+    state.pendingInventorySubmission = null;
 }
 
 function collectFormDataIncludingDisabled(form) {

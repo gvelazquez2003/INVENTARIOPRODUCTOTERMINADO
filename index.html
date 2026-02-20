@@ -117,6 +117,43 @@
         </section>
     </main>
 
+    <div class="confirm-modal" id="confirm-modal" hidden>
+        <div class="confirm-modal__backdrop" data-close-confirm></div>
+        <div class="confirm-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+            <div class="confirm-modal__header">
+                <h3 id="confirm-modal-title">Confirmar entrega a sede</h3>
+                <button type="button" class="confirm-modal__close" data-close-confirm aria-label="Cerrar">×</button>
+            </div>
+            <p class="confirm-modal__hint">Verifica los datos antes de enviar.</p>
+
+            <div class="confirm-modal__grid" id="confirm-summary-grid"></div>
+
+            <div class="confirm-modal__table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Unidad</th>
+                            <th>Cantidad entregada</th>
+                        </tr>
+                    </thead>
+                    <tbody id="confirm-products-body"></tbody>
+                </table>
+            </div>
+
+            <label class="confirm-modal__agreement">
+                <input type="checkbox" id="confirm-agreement" />
+                <span id="confirm-agreement-text">Yo, responsable, estoy de acuerdo con estos productos y cantidades.</span>
+            </label>
+
+            <div class="confirm-modal__actions">
+                <button type="button" class="confirm-modal__btn confirm-modal__btn--ghost" id="confirm-back">Volver a editar</button>
+                <button type="button" class="confirm-modal__btn confirm-modal__btn--primary" id="confirm-send" disabled>Confirmar y enviar</button>
+            </div>
+        </div>
+    </div>
+
     <datalist id="productos-datalist"></datalist>
     <script src="script.js"></script>
     <footer class="site-footer">
