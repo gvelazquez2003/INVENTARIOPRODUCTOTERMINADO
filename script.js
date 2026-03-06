@@ -1,7 +1,6 @@
 const menuButtons = document.querySelectorAll('.menu__btn');
 const formCards = document.querySelectorAll('.form-card');
-const MAINTENANCE_MODE = true;
-const NEW_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgmsAhdLkayqbKU3xtNAU_OzadlIcRprlyjey9xOsr4M3meIaJSBFm1yHCyofOUrPgXg/exec';
+const NEW_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWAfXJihIAH2UwUfbpYUR5HjnAbb6rvisJZ5YTK2gRQjzXmehO5yzilcEUOHSSazfwdw/exec';
 const APPS_SCRIPT_URL = NEW_APPS_SCRIPT_URL;
 
 menuButtons.forEach((btn) => {
@@ -46,10 +45,6 @@ const DEMO_PRODUCTS = [
 forms.forEach((form) => {
     form.addEventListener('submit', handleSubmit);
 });
-
-if (MAINTENANCE_MODE) {
-    disableFormSubmissionsForMaintenance();
-}
 
 refreshProductsBtn?.addEventListener('click', () => fetchProducts());
 productSearchInput?.addEventListener('input', (event) => {
@@ -102,11 +97,6 @@ async function handleSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const action = form.dataset.action;
-
-    if (MAINTENANCE_MODE && action === 'inventario') {
-        setStatus(action, 'Mantenimiento activo: el registro de datos está deshabilitado temporalmente.', 'error');
-        return;
-    }
 
     let productos = [];
     if (action === 'inventario') {
@@ -509,21 +499,4 @@ function resetInventoryForm(form) {
         addProductLine();
     }
     syncSedeWithTipo();
-}
-
-function disableFormSubmissionsForMaintenance() {
-    forms.forEach((form) => {
-        if (form.dataset.action !== 'inventario') {
-            return;
-        }
-
-        const submitButton = form.querySelector('button[type="submit"]');
-        if (!submitButton) {
-            return;
-        }
-
-        submitButton.disabled = true;
-        submitButton.dataset.originalText = submitButton.textContent;
-        submitButton.textContent = 'Mantenimiento...';
-    });
 }
