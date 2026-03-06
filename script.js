@@ -1,5 +1,8 @@
 const menuButtons = document.querySelectorAll('.menu__btn');
 const formCards = document.querySelectorAll('.form-card');
+const MAINTENANCE_MODE = true;
+const NEW_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgmsAhdLkayqbKU3xtNAU_OzadlIcRprlyjey9xOsr4M3meIaJSBFm1yHCyofOUrPgXg/exec';
+const APPS_SCRIPT_URL = NEW_APPS_SCRIPT_URL;
 
 menuButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -12,7 +15,6 @@ menuButtons.forEach((btn) => {
         });
     });
 });
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgmsAhdLkayqbKU3xtNAU_OzadlIcRprlyjey9xOsr4M3meIaJSBFm1yHCyofOUrPgXg/exec';
 const forms = document.querySelectorAll('form[data-action]');
 const productTableBody = document.getElementById('product-table-body');
 const productDatalist = document.getElementById('productos-datalist');
@@ -44,6 +46,10 @@ const DEMO_PRODUCTS = [
 forms.forEach((form) => {
     form.addEventListener('submit', handleSubmit);
 });
+
+if (MAINTENANCE_MODE) {
+    disableFormSubmissionsForMaintenance();
+}
 
 refreshProductsBtn?.addEventListener('click', () => fetchProducts());
 productSearchInput?.addEventListener('input', (event) => {
@@ -96,6 +102,12 @@ async function handleSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const action = form.dataset.action;
+
+    if (MAINTENANCE_MODE && action === 'inventario') {
+        setStatus(action, 'Mantenimiento activo: el registro de datos está deshabilitado temporalmente.', 'error');
+        return;
+    }
+
     let productos = [];
     if (action === 'inventario') {
         try {
@@ -236,11 +248,11 @@ function collectFormDataIncludingDisabled(form) {
 }
 
 async function sendToAppsScript(body) {
-    if (!SCRIPT_URL || SCRIPT_URL.includes('REPLACE_WITH_DEPLOYMENT_ID')) {
-        throw new Error('Actualice SCRIPT_URL con la URL del Web App de Apps Script.');
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('REPLACE_WITH_DEPLOYMENT_ID')) {
+        throw new Error('Actualice NEW_APPS_SCRIPT_URL con la URL del Web App de Apps Script.');
     }
 
-    const response = await fetch(SCRIPT_URL, {
+    const response = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(body),
@@ -269,11 +281,11 @@ async function fetchProducts(options = {}) {
     }
 
     try {
-        if (!SCRIPT_URL || SCRIPT_URL.includes('REPLACE_WITH_DEPLOYMENT_ID')) {
+        if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('REPLACE_WITH_DEPLOYMENT_ID')) {
             renderProducts(DEMO_PRODUCTS);
-            throw new Error('Usando lista de demostración. Configure SCRIPT_URL para obtener datos reales.');
+            throw new Error('Usando lista de demostración. Configure NEW_APPS_SCRIPT_URL para obtener datos reales.');
         }
-        const fullUrl = `${SCRIPT_URL}?action=getProducts`;
+        const fullUrl = `${APPS_SCRIPT_URL}?action=getProducts`;
         console.log('[Productos] GET', fullUrl);
         const response = await fetch(fullUrl);
         console.log('[Productos] Status', response.status, response.statusText);
@@ -298,7 +310,7 @@ async function fetchProducts(options = {}) {
         }
     } catch (error) {
         console.error('[Productos] Fetch error', error);
-        if (!SCRIPT_URL.includes('REPLACE_WITH_DEPLOYMENT_ID')) {
+        if (!APPS_SCRIPT_URL.includes('REPLACE_WITH_DEPLOYMENT_ID')) {
             renderProducts([]);
             updateProductDatalist([]);
         }
@@ -497,4 +509,21 @@ function resetInventoryForm(form) {
         addProductLine();
     }
     syncSedeWithTipo();
+}
+
+function disableFormSubmissionsForMaintenance() {
+    forms.forEach((form) => {
+        if (form.dataset.action !== 'inventario') {
+            return;
+        }
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (!submitButton) {
+            return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.dataset.originalText = submitButton.textContent;
+        submitButton.textContent = 'Mantenimiento...';
+    });
 }

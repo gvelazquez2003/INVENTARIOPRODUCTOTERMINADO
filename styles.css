@@ -13,6 +13,28 @@ body.modal-open {
     overflow: hidden;
 }
 
+.maintenance-banner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 1rem 1.5rem 0;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #f59e0b;
+    background: linear-gradient(135deg, #fff7e6, #fffbeb);
+    color: #92400e;
+    box-shadow: 0 6px 16px rgba(146, 64, 14, 0.12);
+}
+
+.maintenance-banner strong {
+    font-weight: 700;
+}
+
+.maintenance-banner span {
+    line-height: 1.4;
+}
+
 header {
     background: #0f5d7a;
     color: #fff;
