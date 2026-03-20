@@ -562,3 +562,177 @@ button[type="submit"]:hover {
         width: 100%;
     }
 }
+
+/* ===== Paleta Pan de Tata ===== */
+:root {
+    --pdt-black: #000000;
+    --pdt-cream: #F8F3E9;
+    --pdt-cream-soft: #FFF8ED;
+    --pdt-brown: #C06E32;
+    --pdt-border: #D9C8AB;
+}
+
+body {
+    background: var(--pdt-cream);
+    color: var(--pdt-black);
+}
+
+header {
+    background: var(--pdt-black);
+    color: var(--pdt-cream);
+}
+
+header h1 {
+    color: var(--pdt-cream);
+}
+
+.back-link {
+    background: var(--pdt-brown);
+    color: var(--pdt-cream);
+    border: 1px solid var(--pdt-brown);
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+    background: var(--pdt-black);
+    color: var(--pdt-cream);
+    border-color: var(--pdt-black);
+    outline: none;
+}
+
+.menu {
+    background: var(--pdt-cream-soft);
+    border-right: 1px solid var(--pdt-border);
+}
+
+.menu__btn {
+    border-color: var(--pdt-brown);
+    background: var(--pdt-cream);
+    color: var(--pdt-black);
+    font-weight: 700;
+}
+
+.menu__btn:hover,
+.menu__btn.active,
+.menu__btn:focus-visible {
+    background: var(--pdt-brown);
+    color: var(--pdt-cream);
+    border-color: var(--pdt-brown);
+    outline: none;
+}
+
+.form-card {
+    background: var(--pdt-cream-soft);
+    border: 1px solid var(--pdt-border);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.1);
+}
+
+.form-card h3,
+label,
+.product-lines__hint,
+.product-panel__hint,
+.site-footer {
+    color: var(--pdt-black);
+}
+
+input,
+textarea,
+select,
+.product-search {
+    background: #fffdf8;
+    color: var(--pdt-black);
+    border: 1px solid var(--pdt-border);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #6c5848;
+}
+
+button[type="submit"],
+.add-product-line,
+.refresh-products,
+.product-line button.remove-line,
+.confirm-modal__btn--primary,
+.confirm-modal__btn--ghost {
+    background: var(--pdt-brown);
+    color: var(--pdt-cream);
+    border: 1px solid var(--pdt-brown);
+}
+
+button[type="submit"]:hover,
+.add-product-line:hover,
+.refresh-products:hover,
+.product-line button.remove-line:hover,
+.confirm-modal__btn--primary:hover,
+.confirm-modal__btn--ghost:hover,
+.confirm-modal__btn--primary:focus-visible,
+.confirm-modal__btn--ghost:focus-visible {
+    background: var(--pdt-black);
+    color: var(--pdt-cream);
+    border-color: var(--pdt-black);
+    opacity: 1;
+    outline: none;
+}
+
+.product-panel {
+    border-top: 1px solid var(--pdt-border);
+}
+
+.product-panel__notice,
+.product-lines,
+.confirm-summary-item,
+.confirm-modal__agreement {
+    background: var(--pdt-cream);
+    color: var(--pdt-black);
+    border-color: var(--pdt-border);
+}
+
+.product-table-wrapper,
+.confirm-modal__table-wrapper,
+.confirm-modal__dialog {
+    border-color: var(--pdt-border);
+    background: var(--pdt-cream-soft);
+}
+
+.product-table-wrapper th,
+.product-table-wrapper td,
+.confirm-modal__table-wrapper th,
+.confirm-modal__table-wrapper td,
+.confirm-summary-item strong,
+.confirm-modal__header h3,
+.confirm-modal__hint,
+.confirm-summary-item span,
+.confirm-modal__agreement {
+    color: var(--pdt-black);
+}
+
+.product-table-wrapper th,
+.confirm-modal__table-wrapper thead,
+.confirm-modal__header,
+.confirm-modal__actions {
+    background: #f1dcc1;
+    border-color: var(--pdt-border);
+}
+
+.product-table-wrapper tbody tr:hover {
+    background: #f7e7d1;
+}
+
+.form-status {
+    color: var(--pdt-black);
+}
+
+.form-status.success {
+    color: #1f7a3f;
+}
+
+.form-status.error {
+    color: #9f1d1d;
+}
+
+.confirm-modal__close {
+    background: var(--pdt-cream);
+    color: var(--pdt-black);
+    border-color: var(--pdt-border);
+}
